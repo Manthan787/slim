@@ -1,7 +1,5 @@
-# slim
+# manthan787.github.io
 
-slim is just a slim jekyll theme. [Demo](http://syaning.com/slim).
+The Jekyll project that powers [manthan787.github.io](http://manthan787.github.io). 
 
-### License
-
-MIT
+It uses the Slim [Demo](http://syaning.com/slim) Jekyll theme.
