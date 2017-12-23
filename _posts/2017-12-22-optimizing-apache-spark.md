@@ -3,6 +3,8 @@ layout: post
 title:  "Optimizing joins in Apache Spark using Scala compiler plugin and broadcast join"
 ---
 
+**TLDR** With our Scala compiler plugin, in the best case we were able to decrease shuffled bytes by 89% and runtime by 24%. Source code, [here](https://github.com/spark-optimizations/join-optimizations).
+
 Join operation on RDDs can be expensive. We suspect that one of the biggest factors that affects join performance is the amount of data shuffled in the process. In order to alleviate excessive shuffling of data, we propose and implement two types of optimization, namely, **Column Pruning** and **Broadcast Join**. In the following sections, we discuss both of these approaches and present our findings.
 
 ## Optimization 1: Column Pruning
