@@ -33,7 +33,7 @@ When a Scala program is compiled using `JoinOptimizer`, the plugin obtains the A
     - Analyze this `Transformation`'s lambda and obtain column usage of target RDDs.
     - Transform the tree before the `join` operation to insert a `mapValues` on target RDD that emits only used columns.
 
-![snippet-compile-time](https://i.imgur.com/dMZ9EBx.png)
+![code-snippet](https://i.imgur.com/UHWZKQ9.png)
 
 Two PairRDDs `rdd1` and `rdd2` are defined in line 1 and 2 in fig 1, both with key data type of `Long` and value data type of `Tuple5[Long, ...]`. Line 5 contains code that performs `join` on `rdd1` and `rdd2` and then uses the first column from `rdd1` and second column from `rdd2` inside the lambda enclosed in `mapValues`. It is quite obvious that 4 columns in both RDDs are unused after `join`. Hence, these unused columns can be pruned.
 
@@ -51,7 +51,7 @@ Fig 2 shows the distribution of compilation time for the same spark program with
 
 **Shuffled Data**
 
-![shuffle-prune](https://i.imgur.com/SUfzeFE.png)
+![shuffle-prune](https://i.imgur.com/zIk1xZ5.png)
 
 Fig 3 (shuffle) shows the amount of data shuffled for both spark programs compiled with (depicted as Plugin) and without (depicted as Control) `JoinOptimizer`. Each block in heatmaps shows median kb shuffled for different configurations of columns. X-axis shows the total number of columns before `join` and Y-axis shows the used number of columns used post `join`.
 
