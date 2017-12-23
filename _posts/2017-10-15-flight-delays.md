@@ -22,3 +22,18 @@ As expected, the dataset contains quite a few invalid records with corrupt value
 * Emitting valid records as key-value pairs
 
 **Reducer**: In the reduce phase all the flights having the same output key (same airline, airport, year and month) are combined by aggregating the delay and flight count in DelayWritable. Since, there could be many flights with same key in one file, we apply the same reducer as combiner which significantly reduced the amount of data shuffled for the reduce phase.
+
+## Most active airlines and airports
+
+Figure 1 shows the most active airlines and airports from years 1987 to 2015. South West Airlines is the most active airline with astonishing 20 million flights. Atlanta's Hartsfield-Jackson is the most active airport, while Chicago's O'Hare closely comes at second place.
+
+![top](https://i.imgur.com/piYLVeO.png)
+
+
+## Delays
+
+![per-year](https://i.imgur.com/7STnTS0.png)
+
+![all-years](https://i.imgur.com/JWLUbYm.png)
+
+![per-month-year](https://i.imgur.com/3tX7Ozs.png)
