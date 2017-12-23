@@ -53,7 +53,7 @@ Fig 3 (shuffle) shows the amount of data shuffled for both spark programs compil
 
 From the Control plot, it can be observed that the amount of data shuffled stays roughly the same for any value on X-axis. This indicates that **in Control shuffle seems to be a function of total number of columns** in the source RDDs. In contrast, for the Plugin plot, the shuffled data increases only when the used number columns increases. It bolsters our initial hypothesis. If number of columns used are constant, regardless of number of total columns shuffled data stays almost constant. Thus, **in Plugin shuffle becomes a function of used number columns** in source RDDs.
 
-Fig 3 also shows the delta for shuffle data between both control and plugin benchmarks. The highest gain in network efficiency of $89\%$ is observed when total number of columns in `rdd1` is $22\%$ and none of the columns are used after join. This means that the optimized code shuffles $89\%$ less data than its unoptimized counterpart. Moreover, the percentage gain increases horizontally from left to right for each value on Y-axis indicating the decrease in shuffling compared to unoptimized version, when total number of columns increase but number of columns used remains constant. Surprisingly, when there's only one column in RDD and none of the columns are used, optimized version shuffles $23\%$ more data than unoptimized version which was unexpected. This could be a limitation in our plugin implementation that converts the RDD values and maps the values as `Tuple22` with $22 \times null$ values.
+Fig 3 also shows the delta for shuffle data between both control and plugin benchmarks. The highest gain in network efficiency of 89% is observed when total number of columns in `rdd1` is 22% and none of the columns are used after join. This means that the optimized code shuffles 89% less data than its unoptimized counterpart. Moreover, the percentage gain increases horizontally from left to right for each value on Y-axis indicating the decrease in shuffling compared to unoptimized version, when total number of columns increase but number of columns used remains constant. Surprisingly, when there's only one column in RDD and none of the columns are used, optimized version shuffles 23% more data than unoptimized version which was unexpected. This could be a limitation in our plugin implementation that converts the RDD values and maps the values as `Tuple22` with 22 x null values.
 
 **Execution Time**
 
@@ -73,9 +73,9 @@ The key components in this proposed approach are:
 
 Estimating the size of target RDDs is instrumental in performing broadcast join. We have implemented a size estimator for RDDs that uses the following formula:
 
-$estimated\_size = size(N) \times R / N$
+```estimated_size = size(N) * R / N```
 
-Where $R$ is total number of rows in the RDD, and $size(N)$ gives total size of $N$ sample rows fetched from each partition.
+Where R is total number of rows in the RDD, and size(N) gives total size of N sample rows fetched from each partition.
 
 Since this is an heuristic approach, it is prone to underestimation when rows contain variable number of columns. In such cases broadcasting an RDD might result in ungraceful job failure. Therefore, we keep the estimator configurable for the user, so that user can provide a custom size estimator according to data.
 
@@ -93,19 +93,19 @@ Figure 4 shows benchmark results for our broadcast join implementation for varyi
 
 To measure the impact of increasing size of bigger RDD on broadcast join, we keep the size of small RDD constant and vary big RDD. Figure 4(a) shows execution times of joins for this experiment in two different scenarios.
 
-The **first scenario** is when one RDD is small and the other RDD is big marked as squares. `BS:Shuffle` shows the execution time for shuffle RDD join in this scenario for varying sizes of big RDD. `BS:BJ` similarly shows the execution time for broadcast join. This is an ideal scenario for a broadcast join. Therefore, as the size of the big RDD increases, broadcast join yields better performance. This is because, shuffle join has to send more data over network as the size of big RDD increases. We observed about $50\%$ of improvement in performance for broadcast join of small RDD to big RDD.
+The **first scenario** is when one RDD is small and the other RDD is big marked as squares. `BS:Shuffle` shows the execution time for shuffle RDD join in this scenario for varying sizes of big RDD. `BS:BJ` similarly shows the execution time for broadcast join. This is an ideal scenario for a broadcast join. Therefore, as the size of the big RDD increases, broadcast join yields better performance. This is because, shuffle join has to send more data over network as the size of big RDD increases. We observed about 50% of improvement in performance for broadcast join of small RDD to big RDD.
 
-The **second scenario** is less ideal for broadcast join. In this scenario, both RDDs are big and therefore can't be broadcast. The execution times for this scenario are marked as triangles in Fig 4(a), where `BB:BJ` means execution times for broadcast join and `BB:Shuffle` means execution times for shuffle joins. Here, as the size of big RDD increases, shuffle join yields better performance. We believe that this is because of the estimation overhead incurred by the size estimator. We observed about $50\%$ of decrease in performance for broadcast join of small RDD to big RDD.
+The **second scenario** is less ideal for broadcast join. In this scenario, both RDDs are big and therefore can't be broadcast. The execution times for this scenario are marked as triangles in Fig 4(a), where `BB:BJ` means execution times for broadcast join and `BB:Shuffle` means execution times for shuffle joins. Here, as the size of big RDD increases, shuffle join yields better performance. We believe that this is because of the estimation overhead incurred by the size estimator. We observed about 50% of decrease in performance for broadcast join of small RDD to big RDD.
 
 **Fixed size big RDD**
 
-To understand the ideal broadcast size for small RDD, we keep big RDD constant and vary the size of small RDD along with broadcast memory threshold. We plot the execution time of join operation for different sizes of small RDD. Figure 4(b) shows execution times for this set up. Here, broadcast join times are marked as triangles and shuffle join times are marked as squares. With our local configuration, we observed that once the size of broadcast RDD increases more than $256 mb$, performance gains obtained using broadcast join starts to diminish.
+To understand the ideal broadcast size for small RDD, we keep big RDD constant and vary the size of small RDD along with broadcast memory threshold. We plot the execution time of join operation for different sizes of small RDD. Figure 4(b) shows execution times for this set up. Here, broadcast join times are marked as triangles and shuffle join times are marked as squares. With our local configuration, we observed that once the size of broadcast RDD increases more than 256 mb, performance gains obtained using broadcast join starts to diminish.
 
 # Conclusion
 
 1. Why doesn't Spark perform column pruning on RDD joins? We started our project with this simple question. We found that for doing any optimization like this Spark needs access to source code and recompile lambdas and/or functions to an optimal code.
 1. We also found Scala compiler plugin could prove to be a very useful Spark companion in optimizing job and with considerable shuffle saves for poorly written jobs. Provided appropriate documentations become available for Scala compiler plugin for new developers to get onboarded.
-1. Broadcast Join seems to outperform shuffle join when one RDD is smaller than $256 mb$ in our tests. It could prove very useful in case of unknown RDD sizes, when actual RDD size is suspected to be small while writing the job.
+1. Broadcast Join seems to outperform shuffle join when one RDD is smaller than 256 mb in our tests. It could prove very useful in case of unknown RDD sizes, when actual RDD size is suspected to be small while writing the job.
 
 # Future Work
 
